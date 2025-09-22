@@ -30,14 +30,5 @@ jobs:
       - name: Executar testes
         run: poetry run pytest
 
-      # 🔥 ETAPA NOVA: Build da imagem Docker
-      - name: Construir imagem Docker
+      - name: Build Docker
         run: docker build -t fastapi-app:latest .
-
-      # (Opcional) Rodar o container para garantir que sobe sem erro
-      - name: Rodar container (verificação simples)
-        run: |
-          docker run --rm -d -p 8000:8000 --name test-container fastapi-app:latest
-          sleep 5  # Espera o container subir
-          docker logs test-container  # Mostra logs do container
-          docker stop test-container

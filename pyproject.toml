@@ -7,7 +7,7 @@ authors = [
 ]
 license = {text = "yes"}
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9,<3.13"
 dependencies = [
     "fastapi[standard] (>=0.116.1,<0.117.0)"
 ]

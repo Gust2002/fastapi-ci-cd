@@ -1,61 +1,48 @@
-from fastapi import FastAPI, HTTPException, Depends, status
-from pydantic import BaseModel 
-
-from sqlalchemy import create_engine 
-from sqlalchemy.orm import declarative_base, sessionmaker
-
-db = create_engine("sqlite:///mydata.db")
-
-Session = sessionmaker(bind=db)
-session = Session()
-
-Base = declarative_base()
-Base.metadata.create_all(bind=db)
+from fastapi import FastAPI, HTTPException, status
 
 app = FastAPI()
 
-@app.get("/")
-def Hello_World():
-    return {"message": "Hello Guys, How you all doing?"}
+@app.get("/hello")
+def Hello_world():
+    return {"Message" "Hello guys"}
 
-meus_livros = {}
 
-class Livro(BaseModel):
-  nome_livro: str
-  autor_livro: str 
-  apelido_livro: str 
-  ano_livro: int 
-    
-@app.get("/buscar")
-def get_livro():
-    if not meus_livros:
-        return {"message": "Nao existe nenhum livro"}
+my_library = {}
+
+@app.get("/requesting")
+def get_book(id_book: int, book_name: str, author_name: str, book_year: int):
+ if not my_library:
+    return {"Message": "This book does not exist"}
+ else:
+     return {"get_book": my_library}
+ 
+@app.post("/creating")
+def post_book(id_book: int, book_name: str, author_name: str, book_year):
+    if id_book in my_library:
+        raise HTTPException(status_code=400,detail="This book is created already")
     else:
-        return {"message": meus_livros}
-    
-@app.post("/adicionar")
-def post_livros(id_livro: int, livro: Livro):
-    if id_livro in meus_livros:
-        raise HTTPException(status_code=400,detail="Esse livro ja existe no banco de dados")
-    else:
-        meus_livros[id_livro] = livro.dict()
+        my_library[id_book] = {"book_name": book_name, "author_name": author_name, "book_year": book_year}
         
-        return {"message": "Esse livro foi criado com sucesso"}
+        return {"Message": "Your book has been created with suceafully!!"}
     
-@app.put("/atualiza/{id_livro}")
-def put_livros(id_livro: int, livro: Livro):
-    livro = meus_livros.get[id_livro]
-    if not livro:
-        raise HTTPException(status_code=404,detail="Esse livro nao existe no banco de dados")
+@app_put("/update/{id_book}")
+def put_book(id_book: int, book_name: str, author_name: str, book_year: int):
+    book = my_library.get[id_book]
+    if not book:
+        raise HTTPException(status_code=404,detail="This book was not found on the system")
     else:
-     meus_livros[id_livro] = livro.dict()
-            
-    return {"message": "Seu livro foi criado com sucesso"}
+        if book_name:
+         book_name["book_name"] = book_name
+        if author_name:
+         author_name["author_name"] = author_name
+        if book_year:
+         book_year["book_year"] = book_year
     
-@app.delete("/deletar/{id_livro}")
-def deletar_livro(id_livro: int):
-    if id_livro not in meus_livros:
-        raise HTTPException(status_code=500,detail="Esse livro nao existe no banco de dados")
+    return {"Message": "Your book has been update with sucesfully"} 
+
+@app.delete("/delete/{id_book}")
+def delete_book(id_book: int, book_name: str, author_book: str, year_book: int):
+    if id_book not in my_library:
+        raise HTTPException(status_code=500,detail="This book was not found on the system")
     else:
-       del meus_livros[id_livro]
-       return {"message": "Esse livro foi deletado com sucesso"}   
+        del my_library[id_book]
